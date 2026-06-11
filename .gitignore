@@ -1,0 +1,26 @@
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+.venv/
+venv/
+env/
+
+.DS_Store
+
+# Local reference materials not intended for the shared repo.
+Kuo_2020_ApJ_892_18.pdf
+eposter_kelahan_etal.md
+eposter_kelahan_etal.txt
+poster_images/
+
+# Generated analysis outputs.
+data/processed/
+data/figures/
+outputs/
+
+# Local assistant/editor state.
+.claude/
+.codex/
+.agents/
+CLAUDE.md
