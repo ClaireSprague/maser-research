@@ -25,6 +25,18 @@ DATA_RAW = ROOT / "data" / "raw"
 NA_VALUES = ["---", "-99.0", "-99"]
 WISE_BANDS = ["w1", "w2", "w3", "w4"]
 
+# Canonical feature columns and binary target for each analysis track (see
+# docs/PREREGISTRATION.md). The synthetic generator (src/synth_data.py) mirrors
+# these column names, so a pipeline written as `X, y = df[FEATURES[t]], df[TARGET[t]]`
+# runs unchanged on real and synthetic data.
+FEATURES = {
+    "xray": ["L_12um_bestfit_1", "Lob"],
+    "wise": ["w1w2", "w2w3"],
+    "fused": ["L_12um_bestfit_1", "Lob", "wise_w1w2", "wise_w2w3"],
+}
+TARGET = {"xray": "is_megamaser_plus", "wise": "is_megamaser",
+          "fused": "is_megamaser_plus"}
+
 
 def _read_table(path):
     header = open(path).readline().lstrip("#").split()
@@ -138,6 +150,9 @@ def load_wise(clean=True, radius_arcsec=6.0):
     df.loc[df["velocity"] == -999, "velocity"] = np.nan
     df["maser_lum"] = df["lum_01"].where(df["lum_01"] >= 0)
     df["maser_class"] = df["class_01"].where(df["class_01"] != -999)
+    # Binary megamaser target (prereg WISE track): L_H2O >= 10 L_sun. NaN
+    # luminosity (nonmasers and lum-unknown masers) compares False -> 0.
+    df["is_megamaser"] = (df["maser_lum"] >= 10).astype(int)
 
     df["w1w2"] = df["w1mpro"] - df["w2mpro"]
     df["w2w3"] = df["w2mpro"] - df["w3mpro"]

@@ -35,15 +35,13 @@ a principled objective instead of choosing round numbers by eye, and it returns 
 > **Do fitted decision boundaries select maser candidates better than the paper's
 > hand-drawn cuts? If so, by how many extra masers per observing campaign?**
 
-**What the answer looks like in practice.** Imagine we have telescope time to
-follow up 50 galaxies. We rank all galaxies by our model's predicted probability
-and take the top 50. How many of those 50 turn out to be real masers? That
-fraction is *precision@50*, and it is the number we ultimately care about:
-higher precision means more real masers found per hour of GBT time. We compare
-it to what the paper's best cut gives for the same 50-galaxy budget. The full
-picture is a *precision-recall curve*, which shows that tradeoff across every
-possible budget size, but precision@50 is the single summary number tied to
-a concrete observing scenario.
+**What the answer looks like in practice.** The paper's cuts are hard
+inside/outside rules: each cut selects a fixed set of galaxies and therefore has
+one precision and one recall. Our model produces a ranked probability list, so
+we compare it to each cut at the cut's own operating point: on each held-out
+fold, measure the cut's recall, then ask for the model's best precision at
+least that recall. For model-vs-model and feature-set comparisons, where both
+sides are ranked lists, the concrete observing scenario is precision@50.
 
 Note the humble version of this question is still publishable: if a fitted model
 only *ties* the paper's cuts, that tells us the paper's simple box really is the
@@ -198,12 +196,13 @@ the same held-out folds, not their published in-sample numbers, which were
 computed on the full dataset and would be an unfair comparison (Rule 5).
 
 ### Phase 3: Do fancier models help?
-Candidates: gradient-boosted trees (shallow, depth 2 *is* the box; this is
-confirmatory comparison A2), and KNN (exploratory, for continuity with the
-prior student work on this data). The comparison protocol matters more than
-the models (see Section 6). Honest expectation: with ~53 positives, the most
-likely outcome here is "no detectable improvement over logistic regression,"
-and that is a *finding* (the structure really is a line/box), not a failure.
+Candidates: gradient-boosted trees (shallow depth permits two-way threshold
+interactions, but the ensemble is not itself a single box), and KNN
+(exploratory, for continuity with the prior student work on this data). The
+comparison protocol matters more than the models (see Section 6). Honest
+expectation: with ~53 positives, the most likely outcome here is "no detectable
+improvement over logistic regression," and that is a *finding* (the data do not
+justify the extra flexibility), not a failure.
 The version of this question with real statistical power is C2, on the WISE
 track (Phase 5).
 
